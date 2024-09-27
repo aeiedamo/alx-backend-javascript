@@ -1,17 +1,17 @@
-import readDatabase from "../utils";
+import readDatabase from '../utils';
 
-const VALID_MAJORS = ["CS", "SWE"];
+const VALID_MAJORS = ['CS', 'SWE'];
 
 /**
  * Contains route handlers.
  */
 class StudentsController {
   static getAllStudents(request, response) {
-    const dataPath = process.argv.length > 2 ? process.argv[2] : "";
+    const dataPath = process.argv.length > 2 ? process.argv[2] : '';
 
     readDatabase(dataPath)
       .then((studentGroups) => {
-        const responseParts = ["This is the list of our students"];
+        const responseParts = ['This is the list of our students'];
         // A comparison function for ordering a list of strings in ascending
         // order by alphabetic order and case insensitive
         const cmpFxn = (a, b) => {
@@ -25,17 +25,17 @@ class StudentsController {
         };
 
         for (const [field, group] of Object.entries(studentGroups).sort(
-          cmpFxn
+          cmpFxn,
         )) {
           responseParts.push(
             [
               `Number of students in ${field}: ${group.length}.`,
-              "List:",
-              group.map((student) => student.firstname).join(", "),
-            ].join(" ")
+              'List:',
+              group.map((student) => student.firstname).join(', '),
+            ].join(' '),
           );
         }
-        response.status(200).send(responseParts.join("\n"));
+        response.status(200).send(responseParts.join('\n'));
       })
       .catch((err) => {
         response
@@ -45,22 +45,22 @@ class StudentsController {
   }
 
   static getAllStudentsByMajor(request, response) {
-    const dataPath = process.argv.length > 2 ? process.argv[2] : "";
+    const dataPath = process.argv.length > 2 ? process.argv[2] : '';
     const { major } = request.params;
 
     if (!VALID_MAJORS.includes(major)) {
-      response.status(500).send("Major parameter must be CS or SWE");
+      response.status(500).send('Major parameter must be CS or SWE');
       return;
     }
     readDatabase(dataPath)
       .then((studentGroups) => {
-        let responseText = "";
+        let responseText = '';
 
         if (Object.keys(studentGroups).includes(major)) {
           const group = studentGroups[major];
           responseText = `List: ${group
             .map((student) => student.firstname)
-            .join(", ")}`;
+            .join(', ')}`;
         }
         response.status(200).send(responseText);
       })
@@ -74,4 +74,3 @@ class StudentsController {
 
 export default StudentsController;
 module.exports = StudentsController;
-
